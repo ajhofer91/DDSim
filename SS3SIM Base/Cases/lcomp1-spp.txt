@@ -1,0 +1,5 @@
+fleets; c(1)
+Nsamp; 
+years; 
+cpar; 1
+lengthbin_vector; NULL
