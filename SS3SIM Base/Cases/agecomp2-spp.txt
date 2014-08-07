@@ -1,5 +1,5 @@
-fleets; c(1, 2)
+fleets; c(1)
 Nsamp; 
-years; 
+years; list(seq(1971,2001,1))
 cpar; 1
-agebin_vector; NULL
+agebin_vector; list(c(0:40))

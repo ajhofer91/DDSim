@@ -1,5 +1,5 @@
-fleets; c(1)
-Nsamp; 
-years; 
-cpar; 1
+fleets; NULL
+Nsamp; NULL
+years; NULL
+cpar; NULL
 agebin_vector; NULL
