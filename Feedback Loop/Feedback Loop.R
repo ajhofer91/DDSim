@@ -91,8 +91,8 @@ Cohort_Dev<-function(Nf,akf,S){
 X<-Cohort_Dev(Nf,akf,S)
 #----------------------------------------------------------------------------------------------------------------------------------#
 #function to write case files for simulation
-growth_file<-function(A,dir){
-  myreplist<-SS_output(paste0(dir,"/D1-E0-F0-G",a,"-spp/1/om"))
+growth_file<-function(A,dir,affix){
+  myreplist<-SS_output(paste0(dir,"/D1-E0-F1-R0-G",A-1,affix,"/1/om"),covar=FALSE)
   N<-myreplist$natage #complete numbers at age
   Nf<-N[1:(nrow(N)/2),]
   Nm<-N[(1+(nrow(N)/2)):nrow(N),]
@@ -107,13 +107,13 @@ growth_file<-function(A,dir){
   Mal<-apply(Cohort_Dev(Nm,akm,S),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
   
   
-  sink(file=paste0(case_folder,"/G",A,"-spp.txt"))
+  sink(file=paste0(case_folder,"/G",A,affix,".txt"))
   cat("function_type; change_tv\n",paste0("change_tv_list; list(Age_K_Fem_GP_1_a_1=",list(Fem[1,1:A]),",\n" )) 
   b<-1
   while((b<A)){
     cat(paste0("Age_K_Fem_GP_1_a_",b+1,"=",list(c(rep(0,b),Fem[(b+1),1:(A-b)])),",\n"))    
     b<-b+1
-   }
+  }
   if(A==1){
     cat(paste0("Age_K_Mal_GP_1_a_1=",list(Fem[1,1]),")"))
   }else{
@@ -136,16 +136,16 @@ Simulation<-function(dir, #wd
                      em_dir, #ss3sim input
                      affix,
                      years){ #Number of years the simulation runs for. [101]
-        a<-1
+  a<-1
   while(a<=years){
-    run_ss3sim(iterations = 1:25, scenarios = paste0("D1-E0-F1-G",a-1, affix),
+    run_ss3sim(iterations = 1:1, scenarios = paste0("D1-E0-F1-R0-G",a-1, affix),
                case_folder = case_folder, om_dir = om, em_dir = em, bias_adjust = F,
                case_files = list(F = "F", D = c("index", "lcomp",
-                                                "agecomp"), G = "G", E = "E"))
+                                                "agecomp"), G = "G", R = "R",E = "E"))
     
-    growth_file(a,dir)
+    growth_file(a,dir,affix)
     a<-a+1
-     }
+  }
   
 }
 #----------------------------------------------------------------------------------------------------------------------------------#
