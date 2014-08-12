@@ -23,10 +23,10 @@ Cohort_Dev<-function(Nf,akf,S){
   while(a<=nrow(M)){
     if(a<=61){CG_Matrix<-rbind(CG_Matrix,diag(M[a:nrow(M),1:ncol(M)]))
               a<-a+1
-             }else{
-               CG_Matrix<-rbind(CG_Matrix,c(diag(M[a:nrow(M),1:ncol(M)]),rep(0,a-61)))
-               a<-a+1               
-             }
+    }else{
+      CG_Matrix<-rbind(CG_Matrix,c(diag(M[a:nrow(M),1:ncol(M)]),rep(0,a-61)))
+      a<-a+1               
+    }
   }
   
   CN_Matrix<-matrix(0,nrow=1,ncol=ncol(Nf),byrow=F)  #ordering Numbers matrix by Cohort
@@ -70,7 +70,7 @@ Cohort_Dev<-function(Nf,akf,S){
   while(a<=nrow(CGD)){
     G_Devs[a,1]<-mean(CGD[a,1:40])
     a<-a+1
-    }
+  }
   
   N_Devs<-matrix(rep(0,nrow(CND)),nrow=nrow(CND),ncol=1)  #Number Deviations
   a<-1
@@ -86,12 +86,9 @@ Cohort_Dev<-function(Nf,akf,S){
   K_devs<-(X/Y)
   K_devs
 }
-
-#checked function 
-X<-Cohort_Dev(Nf,akf,S)
 #----------------------------------------------------------------------------------------------------------------------------------#
 #function to write case files for simulation
-growth_file<-function(A,dir,affix){
+growth_file<-function(A,dir,case_folder,affix){
   myreplist<-SS_output(paste0(dir,"/D1-E0-F1-R0-G",A-1,affix,"/1/om"),covar=FALSE)
   N<-myreplist$natage #complete numbers at age
   Nf<-N[1:(nrow(N)/2),]
@@ -132,8 +129,8 @@ growth_file<-function(A,dir,affix){
 #wrapper for entire simulation
 Simulation<-function(dir, #wd
                      case_folder, #ss3sim input
-                     om_dir, #ss3sim input
-                     em_dir, #ss3sim input
+                     om, #ss3sim input Om directory
+                     em, #ss3sim input Em directory
                      affix,
                      years){ #Number of years the simulation runs for. [101]
   a<-1
@@ -143,16 +140,16 @@ Simulation<-function(dir, #wd
                case_files = list(F = "F", D = c("index", "lcomp",
                                                 "agecomp"), G = "G", R = "R",E = "E"))
     
-    growth_file(a,dir,affix)
+    growth_file(a,dir,case_folder,affix)
     a<-a+1
   }
   
 }
 #----------------------------------------------------------------------------------------------------------------------------------#
-Simulation("F:/SS3SIM/Cod_example/",
-           "F:/SS3SIM/Cod_example/Cases",
-           "F:/SS3SIM/Cod_example/cod-om",
-           "F:/SS3SIM/Cod_example/cod-em",
-           "-cod",
-           100)  
+Simulation("F:/SS3SIM/2011/Basic DD/",            #wd
+           "F:/SS3SIM/2011/Basic DD/Cases",       #ss3sim input (cases)
+           "F:/SS3SIM/2011/Basic DD/BDD_OM",      #ss3sim input (om) 
+           "F:/SS3SIM/2011/Basic DD/BDD_EM",      #ss3sim input (em)
+           "-spp",
+           100)
 
