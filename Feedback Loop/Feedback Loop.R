@@ -104,27 +104,25 @@ growth_file<-function(A,dir,case_folder,affix){
   Mal<-apply(Cohort_Dev(Nm,akm,S),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
   
   
-  sink(file=paste0(case_folder,"/G",A,affix,".txt"))
-  cat("function_type; change_tv\n",paste0("change_tv_list; list(Age_K_Fem_GP_1_a_1=",list(Fem[1,1:A]),",\n" )) 
+  x<-c("function_type; change_tv","change_tv_list; list",paste0("(Age_K_Fem_GP_1_a_1= ",c(Fem[1,1:A]),","))
   b<-1
   while((b<A)){
-    cat(paste0("Age_K_Fem_GP_1_a_",b+1,"=",list(c(rep(0,b),Fem[(b+1),1:(A-b)])),",\n"))    
+    x<-c(x,paste0("Age_K_Fem_GP_1_a_",b+1,"=",c(c(rep(0,b),Fem[(b+1),1:(A-b)])),","))    
     b<-b+1
   }
   if(A==1){
-    cat(paste0("Age_K_Mal_GP_1_a_1=",list(Fem[1,1]),")"))
+    x<-c(x,paste0("Age_K_Mal_GP_1_a_1=",c(Fem[1,1]),")"))
   }else{
-    cat(paste0("Age_K_Mal_GP_1_a_1=",list(Fem[1,1:A]),",\n" )) 
+    x<-c(x,paste0("Age_K_Mal_GP_1_a_1=",c(Fem[1,1:A]),"," )) 
   }
   b<-1
   while((b<A)){
-    cat(paste0("Age_K_Mal_GP_1_a_",b+1,"=",list(c(rep(0,b),Fem[(b+1),1:(A-b)]))))    
+    x<-c(x,paste0("Age_K_Mal_GP_1_a_",b+1,"=",c(c(rep(0,b),Fem[(b+1),1:(A-b)]))))    
     b<-b+1
-    if(b<A){cat(",\n")}else{cat(")")}
+    if(b<A){x<-c(x,",\n",)}else{x<-c(x,")")}
   }
-  sink()
+  write(x,file=paste0(case_folder,"/G",A,affix,".txt"))
 }
-
 #----------------------------------------------------------------------------------------------------------------------------------#
 #wrapper for entire simulation
 Simulation<-function(dir, #wd
