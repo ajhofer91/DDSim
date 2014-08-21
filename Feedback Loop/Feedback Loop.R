@@ -104,25 +104,40 @@ growth_file<-function(A,dir,case_folder,affix){
   Mal<-apply(Cohort_Dev(Nm,akm,S),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
   
   
-  x<-c("function_type; change_tv","change_tv_list; list",paste0("(Age_K_Fem_GP_1_a_1= ",c(Fem[1,1:A]),","))
+  x<-c("function_type; change_tv","param; Age_K_Fem_GP_1_a_1 ",paste0("dev; ",list(c(Fem[1,1:A],rep(0,31-A)))))
+  write(x,file=paste0(case_folder,"/1X",A,affix,".txt"))
+  
+  x<-c("function_type; change_tv",paste0("param; Age_K_Mal_GP_1_a_1"),paste0("dev; ",list(c(Mal[1,1:A],rep(0,31-A)))))
+  write(x,file=paste0(case_folder,"/1Y",A,affix,".txt"))
+  
   b<-1
-  while((b<A)){
-    x<-c(x,paste0("Age_K_Fem_GP_1_a_",b+1,"=",c(c(rep(0,b),Fem[(b+1),1:(A-b)])),","))    
+  while((b<25)){
+    if(b<A){n<-rep(0,31)
+            n[1:(A-b)]<-Fem[(b+1),1:(A-b)]
+            x<-c("function_type; change_tv",paste0("param; Age_K_Fem_GP_1_a_",b+1),paste0("dev; ",list(c(n))))    
+            write(x,file=paste0(case_folder,"/",b+1,"X",A,affix,".txt"))
+    }else{
+      x<-c("function_type; change_tv",paste0("param; Age_K_Fem_GP_1_a_",b+1),paste0("dev; ",list(c(rep(0,31)))))    
+      write(x,file=paste0(case_folder,"/",b+1,"X",A,affix,".txt"))
+    }
+    b<-b+1
+  }  
+  b<-1
+  while((b<25)){
+    if(b<A){n<-rep(0,31)
+            n[1:(A-b)]<-Mal[(b+1),1:(A-b)]
+            x<-c("function_type; change_tv",paste0("param; Age_K_Mal_GP_1_a_",b+1),paste0("dev; ",list(c(n))))    
+            write(x,file=paste0(case_folder,"/",b+1,"Y",A,affix,".txt"))  
+    }else{
+      x<-c("function_type; change_tv",paste0("param; Age_K_Mal_GP_1_a_",b+1),paste0("dev; ",list(c(rep(0,31)))))   
+      write(x,file=paste0(case_folder,"/",b+1,"Y",A,affix,".txt"))   
+    }
     b<-b+1
   }
-  if(A==1){
-    x<-c(x,paste0("Age_K_Mal_GP_1_a_1=",c(Fem[1,1]),")"))
-  }else{
-    x<-c(x,paste0("Age_K_Mal_GP_1_a_1=",c(Fem[1,1:A]),"," )) 
-  }
-  b<-1
-  while((b<A)){
-    x<-c(x,paste0("Age_K_Mal_GP_1_a_",b+1,"=",c(c(rep(0,b),Fem[(b+1),1:(A-b)]))))    
-    b<-b+1
-    if(b<A){x<-c(x,",\n",)}else{x<-c(x,")")}
-  }
-  write(x,file=paste0(case_folder,"/G",A,affix,".txt"))
+  
 }
+
+
 #----------------------------------------------------------------------------------------------------------------------------------#
 #wrapper for entire simulation
 Simulation<-function(dir, #wd
@@ -136,7 +151,7 @@ Simulation<-function(dir, #wd
     run_ss3sim(iterations = 1:1, scenarios = paste0("D1-E0-F1-R0-G",a-1, affix),
                case_folder = case_folder, om_dir = om, em_dir = em, bias_adjust = F,
                case_files = list(F = "F", D = c("index", "lcomp",
-                                                "agecomp"), G = "G", R = "R",E = "E"))
+                                                "agecomp"), G=c(paste0(seq(1:25),'X'),paste0(seq(1:25),'Y')), R = "R",E = "E"))
     
     growth_file(a,dir,case_folder,affix)
     a<-a+1
