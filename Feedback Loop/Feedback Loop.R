@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------------------------------------------------------------------#
 library(ss3sim)
 library(r4ss)
-setwd('F:/SS3SIM/2011/Basic DD')
+setwd('C:/Users/Alex/Desktop/Test Run')
 #_---------------------------------------------------------------------------------------------------------------------------------#
 #Function to calculate cohort growth deviations
 Cohort_Dev<-function(Nf,akf,S){
@@ -88,7 +88,7 @@ Cohort_Dev<-function(Nf,akf,S){
 }
 #----------------------------------------------------------------------------------------------------------------------------------#
 #function to write case files for simulation
-growth_file<-function(A,dir,case_folder,affix){
+growth_file<-function(A,dir,case_folder,affix,years,str){
   myreplist<-SS_output(paste0(dir,"/D1-E0-F1-R0-G",A-1,affix,"/1/om"),covar=FALSE)
   N<-myreplist$natage #complete numbers at age
   Nf<-N[1:(nrow(N)/2),]
@@ -102,35 +102,32 @@ growth_file<-function(A,dir,case_folder,affix){
   
   Fem<-apply(Cohort_Dev(Nf,akf,S),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
   Mal<-apply(Cohort_Dev(Nm,akm,S),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
-  
-  
-  x<-c("function_type; change_tv","param; Age_K_Fem_GP_1_a_1 ",paste0("dev; ",list(c(Fem[1,1:A],rep(0,31-A)))))
-  write(x,file=paste0(case_folder,"/1X",A,affix,".txt"))
-  
-  x<-c("function_type; change_tv",paste0("param; Age_K_Mal_GP_1_a_1"),paste0("dev; ",list(c(Mal[1,1:A],rep(0,31-A)))))
-  write(x,file=paste0(case_folder,"/1Y",A,affix,".txt"))
+  Fem<-str*Fem
+  Mal<-str*Mal
+  f<-rep(0,years)
+  f[1:A]<-round(Fem[1,1:A],6)
+  cat("function_type; change_tv","\n","param; Age_K_Fem_GP_1_a_1","\n",c(paste0("dev; ",list(c(f)))),file=paste0(case_folder,"/1X",A,affix,".txt"),fill=F)
+  m<-rep(0,years)
+  m[1:A]<-round(Mal[1,1:A],6)
+  cat("function_type; change_tv","\n","param; Age_K_Mal_GP_1_a_1","\n",c(paste0("dev; ",list(c(m)))),file=paste0(case_folder,"/1Y",A,affix,".txt"),fill=F)
   
   b<-1
-  while((b<25)){
-    if(b<A){n<-rep(0,31)
-            n[1:(A-b)]<-Fem[(b+1),1:(A-b)]
-            x<-c("function_type; change_tv",paste0("param; Age_K_Fem_GP_1_a_",b+1),paste0("dev; ",list(c(n))))    
-            write(x,file=paste0(case_folder,"/",b+1,"X",A,affix,".txt"))
+  while((b<years)){
+    if(b<A){n<-rep(0,years)
+            n[b:(A-b)]<-round(Fem[(b+1),1:(A-b)],6)
+            cat("function_type; change_tv","\n",paste0("param; Age_K_Fem_GP_1_a_",b+1),"\n",c(paste0("dev; ",list(c(n)))),file=paste0(case_folder,"/",b+1,"X",A,affix,".txt"),fill=F)
     }else{
-      x<-c("function_type; change_tv",paste0("param; Age_K_Fem_GP_1_a_",b+1),paste0("dev; ",list(c(rep(0,31)))))    
-      write(x,file=paste0(case_folder,"/",b+1,"X",A,affix,".txt"))
+      cat("function_type; change_tv","\n",paste0("param; Age_K_Fem_GP_1_a_",b+1),"\n",c(paste0("dev; ",list(c(rep(0,31))))),file=paste0(case_folder,"/",b+1,"X",A,affix,".txt"),fill=F)
     }
     b<-b+1
   }  
   b<-1
-  while((b<25)){
-    if(b<A){n<-rep(0,31)
-            n[1:(A-b)]<-Mal[(b+1),1:(A-b)]
-            x<-c("function_type; change_tv",paste0("param; Age_K_Mal_GP_1_a_",b+1),paste0("dev; ",list(c(n))))    
-            write(x,file=paste0(case_folder,"/",b+1,"Y",A,affix,".txt"))  
+  while((b<years)){
+    if(b<A){n<-rep(0,years)
+            n[b:(A-b)]<-round(Mal[(b+1),1:(A-b)],6)
+            cat("function_type; change_tv","\n",paste0("param; Age_K_Mal_GP_1_a_",b+1),"\n",c(paste0("dev; ",list(c(n)))),file=paste0(case_folder,"/",b+1,"Y",A,affix,".txt"),fill=F)  
     }else{
-      x<-c("function_type; change_tv",paste0("param; Age_K_Mal_GP_1_a_",b+1),paste0("dev; ",list(c(rep(0,31)))))   
-      write(x,file=paste0(case_folder,"/",b+1,"Y",A,affix,".txt"))   
+      cat("function_type; change_tv","\n",paste0("param; Age_K_Mal_GP_1_a_",b+1),"\n",c(paste0("dev; ",list(c(rep(0,31))))),file=paste0(case_folder,"/",b+1,"Y",A,affix,".txt"),fill=F)   
     }
     b<-b+1
   }
@@ -145,24 +142,28 @@ Simulation<-function(dir, #wd
                      om, #ss3sim input Om directory
                      em, #ss3sim input Em directory
                      affix,
-                     years){ #Number of years the simulation runs for. [101]
-  a<-1
+                     years,
+                     start,
+                     str){ #Number of years the simulation runs for. [101]
+  a<-start
   while(a<=years){
-    run_ss3sim(iterations = 1:1, scenarios = paste0("D1-E0-F1-R0-G",a-1, affix),
+    run_ss3sim(iterations = 1:1, scenarios = paste0("D1-E0-F1-R0-G",a, affix),
                case_folder = case_folder, om_dir = om, em_dir = em, bias_adjust = F,
                case_files = list(F = "F", D = c("index", "lcomp",
                                                 "agecomp"), G=c(paste0(seq(1:25),'X'),paste0(seq(1:25),'Y')), R = "R",E = "E"))
     
-    growth_file(a,dir,case_folder,affix)
+    growth_file(a+1,dir,case_folder,affix,years,str)
     a<-a+1
   }
   
 }
 #----------------------------------------------------------------------------------------------------------------------------------#
-Simulation("F:/SS3SIM/2011/Basic DD/",            #wd
-           "F:/SS3SIM/2011/Basic DD/Cases",       #ss3sim input (cases)
-           "F:/SS3SIM/2011/Basic DD/BDD_OM",      #ss3sim input (om) 
-           "F:/SS3SIM/2011/Basic DD/BDD_EM",      #ss3sim input (em)
+Simulation("C:/Users/Alex/Desktop/Test Run",            #wd
+           "C:/Users/Alex/Desktop/Test Run/Cases",       #ss3sim input (cases)
+           "C:/Users/Alex/Desktop/Test Run/BDD_OM",      #ss3sim input (om) 
+           "C:/Users/Alex/Desktop/Test Run/BDD_EM",      #ss3sim input (em)
            "-spp",
-           100)
+           31,
+           0,
+           1)
 
