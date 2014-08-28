@@ -1,0 +1,5 @@
+fleets; c(1)
+Nsamp; list(100)
+years; list(seq(1971,2001,1))
+cpar; 1
+lengthbin_vector; NULL

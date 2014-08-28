@@ -1,0 +1,3 @@
+years; 1971:2001
+years_alter; 1971:2001
+fvals;  rep(0,31)
