@@ -22,7 +22,7 @@ run_ddsim <- function(dir, #wd
                case_files = list(F = "F", D = c("index", "lcomp",
                                                 "agecomp"), G=c(paste0(seq(1:25),'X'),paste0(seq(1:25),'Y')), R = "R",E = "E"))
     
-    growth_file(a+1,dir,case_folder,affix,years,str)
+    write_growth_casefile(a+1,dir,case_folder,affix,years,str)
     a<-a+1
   }
 }

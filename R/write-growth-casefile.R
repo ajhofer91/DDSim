@@ -19,8 +19,8 @@ write_growth_casefile <- function(A, dir, case_folder, affix, years, str){
   akm<-t(apply(myreplist$ALK[,,2],2,rev))     #row=age, col=length class
   S<-myreplist$lbinspop
   
-  Fem<-apply(Cohort_Dev(Nf,akf,S,years),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
-  Mal<-apply(Cohort_Dev(Nm,akm,S,years),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
+  Fem<-apply(get_cohort_devs(Nf,akf,S,years),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
+  Mal<-apply(get_cohort_devs(Nm,akm,S,years),2,'/',myreplist$recruit[,2]-mean(myreplist$recruit[,2]))
   Fem<-str*Fem
   Mal<-str*Mal
   f<-rep(0,years)
