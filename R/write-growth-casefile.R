@@ -7,8 +7,8 @@
 #' @param lbin Length vector breakpoints (output from r4ss)
 #' @param yrs Number of years simulation is run
 #' @return Matrix of calculated cohort-specific growth deviations
-write_growth_casefile <- function(A, dir, case_folder, affix, years, str){
-  myreplist<-SS_output(paste0(dir,"/D1-E0-F0-R0-G",A-1,affix,"/1/om"),covar=FALSE)
+write_growth_casefile <- function(A, dir, case_folder,scenario, affix, years, str){
+  myreplist<-SS_output(paste0(dir,"/",scenario,"-G",A-1,affix,"/1/om"),covar=FALSE)
   N<-myreplist$natage #complete numbers at age
   Nf<-N[1:(nrow(N)/2),]
   Nm<-N[(1+(nrow(N)/2)):nrow(N),]

@@ -11,18 +11,19 @@ run_ddsim <- function(dir, #wd
                      case_folder, #ss3sim input
                      om, #ss3sim input Om directory
                      em, #ss3sim input Em directory
+                     scenario,
                      affix,
                      years,
                      start,
                      str){ #Number of years the simulation runs for. [101]
   a<-start
   while(a<=years){
-    run_ss3sim(iterations = 1:1, scenarios = paste0("D1-E0-F0-R0-G",a, affix),
+    run_ss3sim(iterations = 1:1, scenarios = paste0(scenario,"-G",a, affix),
                case_folder = case_folder, om_dir = om, em_dir = em, bias_adjust = F,
                case_files = list(F = "F", D = c("index", "lcomp",
                                                 "agecomp"), G=c(paste0(seq(1:25),'X'),paste0(seq(1:25),'Y')), R = "R",E = "E"))
     
-    write_growth_casefile(a+1,dir,case_folder,affix,years,str)
+    write_growth_casefile(a+1,dir,case_folder,scenario,affix,years,str)
     a<-a+1
   }
 }

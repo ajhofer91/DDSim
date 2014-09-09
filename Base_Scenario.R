@@ -19,6 +19,7 @@ run_ddsim( d,                                   #wd
            paste0(sim_dir_base,"/Cases"),       #ss3sim input (cases)
            paste0(sim_dir_base,"/BDD_OM"),      #ss3sim input (om) 
            paste0(sim_dir_base,"/BDD_EM"),      #ss3sim input (em)
+           "D1-E0-F0-R0",
            "-spp",
            31,
            0,
